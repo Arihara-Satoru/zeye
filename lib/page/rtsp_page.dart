@@ -8,7 +8,8 @@ import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playl
 import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
 
 class RtspPlayerPage extends StatefulWidget {
-  const RtspPlayerPage({super.key});
+  final String url;
+  const RtspPlayerPage({super.key, required this.url});
   @override
   State<RtspPlayerPage> createState() => MyScreenState();
 }
@@ -23,7 +24,7 @@ class MyScreenState extends State<RtspPlayerPage> {
   void initState() {
     super.initState();
     // Play a [Media] or [Playlist].
-    player.open(Media('rtsp://admin:bosmasmart@192.168.1.8/0'));
+    player.open(Media(widget.url));
   }
 
   @override
@@ -35,6 +36,8 @@ class MyScreenState extends State<RtspPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('RTSP 流播放')),
+
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
