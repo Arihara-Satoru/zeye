@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 声明应用程序需要访问网络的权限 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="zeye"
         android:name="${applicationName}"
