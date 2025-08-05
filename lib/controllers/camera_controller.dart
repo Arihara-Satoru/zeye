@@ -141,13 +141,31 @@ class CameraController extends GetxController {
         profiles.first.token,
       );
 
+      // 检查快照URI是否为空
+      if (snapshotUri == null || snapshotUri.isEmpty) {
+        throw Exception('无法获取快照URI，返回为空');
+      }
+
+      // 解析快照URI，确保使用正确的快照端口
+      Uri uri = Uri.parse(snapshotUri);
+      String finalSnapshotUrl;
+
+      // 检查URI是否包含端口，或者端口是否为80
+      // 如果URI没有端口，或者端口不是80，则使用camera.snapshotPort
+      if (uri.port == 0 || uri.port.toString() != camera.snapshotPort) {
+        finalSnapshotUrl =
+            '${uri.scheme}://${uri.host}:${camera.snapshotPort}${uri.path}';
+      } else {
+        finalSnapshotUrl = snapshotUri;
+      }
+
       // 更新摄像头模型
       final updatedCamera = camera.copyWith(
         isOnline: true,
-        snapshotUrl: snapshotUri, // 假设snapshotUri直接是String
+        snapshotUrl: finalSnapshotUrl, // 使用处理后的快照URL
       );
       updateCamera(updatedCamera); // 更新到Hive和RxList
-      print('摄像头 ${camera.name} 快照获取成功: $snapshotUri');
+      print('摄像头 ${camera.name} 快照获取成功: $finalSnapshotUrl');
     } catch (e) {
       print('获取摄像头 ${camera.name} 快照失败: $e');
       print(
