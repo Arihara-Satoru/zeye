@@ -66,7 +66,9 @@ class _RtspPageState extends State<RtspPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.camera.name)), // 显示摄像头名称作为标题
+      appBar: AppBar(
+        title: Text('${widget.camera.name}（如果加载时间过长请返回重新进入）'),
+      ), // 显示摄像头名称作为标题
 
       body: Center(
         child: SizedBox(

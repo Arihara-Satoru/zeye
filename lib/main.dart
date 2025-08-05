@@ -103,16 +103,7 @@ class CameraCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4.0),
-              Text(
-                'IP: ${camera.ipAddress}',
-                style: const TextStyle(fontSize: 14.0, color: Colors.grey),
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                '端口: ${camera.port}',
-                style: const TextStyle(fontSize: 14.0, color: Colors.grey),
-              ),
-              const SizedBox(height: 8.0),
+              Spacer(),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Chip(
