@@ -1,4 +1,4 @@
-import 'package:easy_onvif/onvif.dart';
+import 'package:easy_onvif/onvif.dart'; // 导入easy_onvif库
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // 导入GetX
 import 'package:zeye/controllers/camera_controller.dart'; // 导入摄像头控制器
@@ -66,7 +66,8 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
             username: _usernameController.text,
             password: _passwordController.text,
             ipAddress: _hostController.text,
-            port: '554', // 默认RTSP端口
+            port: '80', // 默认ONVIF端口通常是80
+            isOnline: true, // 连接成功，设置为在线
           );
           // 在setState完成后再执行这些操作
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -96,6 +97,8 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final CameraController cameraController = Get.find(); // 获取摄像头控制器
+
     return Dialog(
       backgroundColor: Theme.of(context).colorScheme.surface, // 从主题里取背景颜色
       child: Padding(
@@ -147,20 +150,33 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
                 const Text('视频流地址:'),
                 SelectableText(_streamUri!),
               ],
-              SizedBox(height: 12),
-              // 移除播放RTSP流按钮，因为现在直接在主界面显示卡片并点击播放
-              // if (_streamUri != null)
-              //   ElevatedButton(
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => RtspPage(url: _streamUri!),
-              //         ),
-              //       );
-              //     },
-              //     child: const Text('播放 RTSP 流'),
-              //   ),
+              const SizedBox(height: 12),
+              // 显示快照
+              Obx(() {
+                final camera = cameraController.findCameraByUrl(_streamUri!);
+                if (camera != null &&
+                    camera.isOnline &&
+                    camera.snapshotUrl != null) {
+                  return Column(
+                    children: [
+                      const Text('快照:'),
+                      const SizedBox(height: 8),
+                      Image.network(
+                        camera.snapshotUrl!,
+                        width: 200,
+                        height: 150,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text('无法加载快照');
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink(); // 不显示快照
+                }
+              }),
             ],
           ],
         ),

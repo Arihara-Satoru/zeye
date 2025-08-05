@@ -23,14 +23,15 @@ class CameraAdapter extends TypeAdapter<Camera> {
       password: fields[3] as String,
       ipAddress: fields[4] as String,
       port: fields[5] as String,
-      isConnected: fields[6] as bool,
+      isOnline: fields[6] as bool,
+      snapshotUrl: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Camera obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class CameraAdapter extends TypeAdapter<Camera> {
       ..writeByte(5)
       ..write(obj.port)
       ..writeByte(6)
-      ..write(obj.isConnected);
+      ..write(obj.isOnline)
+      ..writeByte(7)
+      ..write(obj.snapshotUrl);
   }
 
   @override

@@ -21,7 +21,10 @@ class Camera {
   @HiveField(5)
   final String port; // 端口
   @HiveField(6)
-  final bool isConnected; // 连接状态
+  @HiveField(6)
+  bool isOnline; // 设备在线状态，true为在线，false为离线
+  @HiveField(7)
+  String? snapshotUrl; // 快照URL
 
   /// 构造函数
   Camera({
@@ -31,7 +34,8 @@ class Camera {
     required this.password,
     required this.ipAddress,
     required this.port,
-    this.isConnected = false, // 默认未连接
+    this.isOnline = false, // 默认离线
+    this.snapshotUrl, // 快照URL，可为空
   });
 
   /// 复制构造函数，用于创建新的Camera对象并修改部分属性
@@ -42,7 +46,8 @@ class Camera {
     String? password,
     String? ipAddress,
     String? port,
-    bool? isConnected,
+    bool? isOnline,
+    String? snapshotUrl,
   }) {
     return Camera(
       name: name ?? this.name,
@@ -51,7 +56,8 @@ class Camera {
       password: password ?? this.password,
       ipAddress: ipAddress ?? this.ipAddress,
       port: port ?? this.port,
-      isConnected: isConnected ?? this.isConnected,
+      isOnline: isOnline ?? this.isOnline,
+      snapshotUrl: snapshotUrl ?? this.snapshotUrl,
     );
   }
 }

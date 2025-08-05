@@ -44,8 +44,8 @@ class _RtspPageState extends State<RtspPage> {
     // 监听播放器状态，更新摄像头连接状态
     player.stream.playing.listen((isPlaying) {
       if (isPlaying) {
-        // 播放开始，更新摄像头连接状态为true
-        final updatedCamera = widget.camera.copyWith(isConnected: true);
+        // 播放开始，更新摄像头在线状态为true
+        final updatedCamera = widget.camera.copyWith(isOnline: true);
         cameraController.updateCamera(updatedCamera);
       }
     });
@@ -53,8 +53,8 @@ class _RtspPageState extends State<RtspPage> {
 
   @override
   void dispose() {
-    // 播放器销毁时，更新摄像头连接状态为false
-    final updatedCamera = widget.camera.copyWith(isConnected: false);
+    // 播放器销毁时，更新摄像头在线状态为false
+    final updatedCamera = widget.camera.copyWith(isOnline: false);
     // 在setState完成后再执行这些操作
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cameraController.updateCamera(updatedCamera);

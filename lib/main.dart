@@ -107,12 +107,12 @@ class CameraCard extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Chip(
-                  label: Text(camera.isConnected ? '已连接' : '未连接'),
-                  backgroundColor: camera.isConnected
+                  label: Text(camera.isOnline ? '在线' : '离线'),
+                  backgroundColor: camera.isOnline
                       ? Colors.green[100]
                       : Colors.red[100],
                   labelStyle: TextStyle(
-                    color: camera.isConnected
+                    color: camera.isOnline
                         ? Colors.green[700]
                         : Colors.red[700],
                   ),
