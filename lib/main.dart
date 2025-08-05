@@ -78,44 +78,145 @@ class CameraCard extends StatelessWidget {
 
   const CameraCard({super.key, required this.camera});
 
+  // 显示重命名对话框
+  void _showRenameDialog(BuildContext context, CameraController controller) {
+    final TextEditingController nameController = TextEditingController(
+      text: camera.name,
+    );
+    Get.dialog(
+      AlertDialog(
+        title: const Text('重命名摄像头'),
+        content: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(labelText: '新名称'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('取消')),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                final updatedCamera = camera.copyWith(
+                  name: nameController.text,
+                );
+                controller.updateCamera(updatedCamera);
+                Get.back();
+              }
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 显示删除确认对话框
+  void _showDeleteConfirmDialog(
+    BuildContext context,
+    CameraController controller,
+  ) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('删除摄像头'),
+        content: Text('确定要删除摄像头 "${camera.name}" 吗？'),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('取消')),
+          ElevatedButton(
+            onPressed: () {
+              controller.removeCamera(camera);
+              Get.back();
+            },
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final CameraController cameraController = Get.find(); // 获取摄像头控制器
+
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      child: InkWell(
-        onTap: () {
-          // 点击卡片导航到RTSP页面，并传递摄像头信息
-          Get.to(() => RtspPage(camera: camera));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: GestureDetector(
+        onLongPress: () =>
+            _showRenameDialog(context, cameraController), // 长按重命名
+        child: InkWell(
+          onTap: () {
+            // 点击卡片导航到RTSP页面，并传递摄像头信息
+            Get.to(() => RtspPage(camera: camera));
+          },
+          child: Stack(
             children: [
-              Text(
-                camera.name,
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      camera.name,
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4.0),
+                    // 显示快照
+                    if (camera.isOnline && camera.snapshotUrl != null)
+                      Expanded(
+                        child: Center(
+                          child: Image.network(
+                            camera.snapshotUrl!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.broken_image, size: 50);
+                            },
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: Center(
+                          child: Icon(
+                            camera.isOnline
+                                ? Icons.videocam
+                                : Icons.videocam_off,
+                            size: 50,
+                            color: camera.isOnline ? Colors.green : Colors.red,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 4.0),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Chip(
+                        label: Text(camera.isOnline ? '在线' : '离线'),
+                        backgroundColor: camera.isOnline
+                            ? Colors.green[100]
+                            : Colors.red[100],
+                        labelStyle: TextStyle(
+                          color: camera.isOnline
+                              ? Colors.green[700]
+                              : Colors.red[700],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4.0),
-              Spacer(),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Chip(
-                  label: Text(camera.isOnline ? '在线' : '离线'),
-                  backgroundColor: camera.isOnline
-                      ? Colors.green[100]
-                      : Colors.red[100],
-                  labelStyle: TextStyle(
-                    color: camera.isOnline
-                        ? Colors.green[700]
-                        : Colors.red[700],
-                  ),
+              // 删除按钮
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () =>
+                      _showDeleteConfirmDialog(context, cameraController),
                 ),
               ),
             ],
