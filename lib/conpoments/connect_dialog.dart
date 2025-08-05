@@ -1,6 +1,8 @@
 import 'package:easy_onvif/onvif.dart';
 import 'package:flutter/material.dart';
-import 'package:zeye/page/rtsp_page.dart';
+import 'package:get/get.dart'; // 导入GetX
+import 'package:zeye/controllers/camera_controller.dart'; // 导入摄像头控制器
+import 'package:zeye/models/camera_model.dart'; // 导入摄像头模型
 
 class OnvifHomePage extends StatefulWidget {
   const OnvifHomePage({super.key});
@@ -55,6 +57,23 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
           'rtsp://',
           'rtsp://${_usernameController.text}:${_passwordController.text}@',
         );
+
+        // 创建Camera对象并添加到控制器
+        if (_streamUri != null) {
+          final camera = Camera(
+            name: _hostController.text, // 暂时用IP作为名称
+            url: _streamUri!,
+            username: _usernameController.text,
+            password: _passwordController.text,
+            ipAddress: _hostController.text,
+            port: '554', // 默认RTSP端口
+          );
+          // 在setState完成后再执行这些操作
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Get.find<CameraController>().addCamera(camera);
+            Get.back(); // 连接成功后关闭对话框
+          });
+        }
       });
     } catch (e) {
       setState(() {
@@ -129,18 +148,19 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
                 SelectableText(_streamUri!),
               ],
               SizedBox(height: 12),
-              if (_streamUri != null)
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RtspPlayerPage(url: _streamUri!),
-                      ),
-                    );
-                  },
-                  child: const Text('播放 RTSP 流'),
-                ),
+              // 移除播放RTSP流按钮，因为现在直接在主界面显示卡片并点击播放
+              // if (_streamUri != null)
+              //   ElevatedButton(
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (context) => RtspPage(url: _streamUri!),
+              //         ),
+              //       );
+              //     },
+              //     child: const Text('播放 RTSP 流'),
+              //   ),
             ],
           ],
         ),
