@@ -1,6 +1,7 @@
 // lib/models/camera_model.dart
 
 import 'package:hive/hive.dart'; // 导入Hive
+import 'package:uuid/uuid.dart'; // 导入uuid库
 
 part 'camera_model.g.dart'; // Hive生成的文件
 
@@ -23,6 +24,9 @@ class Camera {
   @HiveField(6)
   @HiveField(6)
   bool isOnline; // 设备在线状态，true为在线，false为离线
+  @HiveField(7)
+  final String? id; // 唯一标识符，现在是可空的
+
   /// 构造函数
   Camera({
     required this.name,
@@ -32,7 +36,8 @@ class Camera {
     required this.ipAddress,
     required this.port,
     this.isOnline = false, // 默认离线
-  });
+    String? id, // id现在是可选的
+  }) : id = id ?? const Uuid().v4(); // 如果id为null，则生成一个新的
 
   /// 复制构造函数，用于创建新的Camera对象并修改部分属性
   Camera copyWith({
@@ -43,6 +48,7 @@ class Camera {
     String? ipAddress,
     String? port,
     bool? isOnline,
+    String? id,
   }) {
     return Camera(
       name: name ?? this.name,
@@ -52,6 +58,7 @@ class Camera {
       ipAddress: ipAddress ?? this.ipAddress,
       port: port ?? this.port,
       isOnline: isOnline ?? this.isOnline,
+      id: id ?? this.id, // 复制时也使用传入的id或旧id
     );
   }
 }

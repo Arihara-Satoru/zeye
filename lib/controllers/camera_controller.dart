@@ -43,35 +43,41 @@ class CameraController extends GetxController {
   }
 
   /// 更新一个摄像头
+  /// 使用摄像头的唯一ID来查找并更新
   void updateCamera(Camera updatedCamera) {
     final int index = cameras.indexWhere(
-      (camera) => camera.url == updatedCamera.url,
+      (camera) => camera.id == updatedCamera.id, // 使用ID查找
     );
     if (index != -1) {
-      _cameraBox.putAt(index, updatedCamera); // 更新Hive Box中的数据
-      cameras[index] = updatedCamera; // 更新RxList
-      // 如果URL改变，重新启动在线状态检测
-      if (cameras[index].url != updatedCamera.url) {
-        _cancelOnlineCheck(updatedCamera.url);
-        _startOnlineCheck(updatedCamera);
-      }
+      // 更新Hive Box中的数据
+      _cameraBox.putAt(index, updatedCamera);
+      // 更新RxList
+      cameras[index] = updatedCamera;
+
+      // 如果URL改变，需要更新在线状态检测的定时器键（如果定时器是基于URL的）
+      // 但现在定时器是基于ID的，所以URL改变不影响定时器本身，
+      // 只需要确保_onlineCheckTimers的键是ID
+      // 如果旧的URL对应的定时器存在，需要取消并用新的ID启动
+      // 实际上，由于定时器现在将与ID关联，这里不需要特殊处理URL变化
+      // 只需要确保_startOnlineCheck和_cancelOnlineCheck使用ID作为键
     }
   }
 
   /// 删除一个摄像头
+  /// 使用摄像头的唯一ID来查找并删除
   void removeCamera(Camera camera) {
-    final int index = cameras.indexWhere((c) => c.url == camera.url);
+    final int index = cameras.indexWhere((c) => c.id == camera.id); // 使用ID查找
     if (index != -1) {
       _cameraBox.deleteAt(index); // 从Hive Box中删除数据
       cameras.removeAt(index); // 从RxList中删除
-      _cancelOnlineCheck(camera.url); // 删除后取消在线状态检测
+      _cancelOnlineCheck(camera.id!); // 删除后取消在线状态检测，使用ID，确保id不为空
     }
   }
 
-  /// 根据URL查找摄像头
-  Camera? findCameraByUrl(String url) {
+  /// 根据ID查找摄像头
+  Camera? findCameraById(String id) {
     try {
-      return cameras.firstWhere((camera) => camera.url == url);
+      return cameras.firstWhere((camera) => camera.id == id);
     } catch (e) {
       return null;
     }
@@ -85,12 +91,14 @@ class CameraController extends GetxController {
   }
 
   /// 为单个摄像头启动在线状态检测定时器
+  /// 定时器现在与摄像头的唯一ID关联
   void _startOnlineCheck(Camera camera) {
     // 如果已经有定时器，先取消
-    _cancelOnlineCheck(camera.url);
+    _cancelOnlineCheck(camera.id!); // 使用ID取消，确保id不为空
 
     // 每两分钟尝试连接
-    _onlineCheckTimers[camera.url] = Timer.periodic(
+    _onlineCheckTimers[camera.id!] = Timer.periodic(
+      // 使用ID作为键，确保id不为空
       const Duration(minutes: 2),
       (timer) {
         _checkOnlineStatus(camera);
@@ -101,9 +109,13 @@ class CameraController extends GetxController {
   }
 
   /// 取消单个摄像头的在线状态检测定时器
-  void _cancelOnlineCheck(String cameraUrl) {
-    _onlineCheckTimers[cameraUrl]?.cancel();
-    _onlineCheckTimers.remove(cameraUrl);
+  /// 使用摄像头的唯一ID来取消
+  void _cancelOnlineCheck(String? cameraId) {
+    // 参数改为可空cameraId
+    if (cameraId != null) {
+      _onlineCheckTimers[cameraId]?.cancel();
+      _onlineCheckTimers.remove(cameraId);
+    }
   }
 
   /// 取消所有摄像头的在线状态检测定时器
@@ -127,14 +139,12 @@ class CameraController extends GetxController {
       if (!camera.isOnline) {
         final updatedCamera = camera.copyWith(isOnline: true);
         updateCamera(updatedCamera);
-        print('摄像头 ${camera.name} 在线');
       }
     } catch (e) {
       // 如果连接失败或超时，更新摄像头在线状态为false
       if (camera.isOnline) {
         final updatedCamera = camera.copyWith(isOnline: false);
         updateCamera(updatedCamera);
-        print('摄像头 ${camera.name} 离线: $e');
       }
     }
   }

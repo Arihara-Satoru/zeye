@@ -1,6 +1,7 @@
 import 'package:easy_onvif/onvif.dart'; // 导入easy_onvif库
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // 导入GetX
+import 'package:uuid/uuid.dart'; // 导入uuid库
 import 'package:zeye/controllers/camera_controller.dart'; // 导入摄像头控制器
 import 'package:zeye/models/camera_model.dart'; // 导入摄像头模型
 
@@ -68,6 +69,7 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
             ipAddress: _hostController.text,
             port: '80', // 默认ONVIF端口通常是80
             isOnline: true, // 连接成功，设置为在线
+            id: const Uuid().v4(), // 生成唯一的ID
           );
           // 在setState完成后再执行这些操作
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -97,9 +99,10 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface, // 从主题里取背景颜色
-      child: Padding(
+      content: Padding(
+        // AlertDialog的子组件通常是content
         padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
