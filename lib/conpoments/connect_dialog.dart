@@ -101,12 +101,12 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface, // 从主题里取背景颜色
-      content: Padding(
+      content: SingleChildScrollView(
         // AlertDialog的子组件通常是content
-        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 20),
             TextField(
               controller: _hostController,
               decoration: const InputDecoration(
@@ -132,14 +132,14 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
               ),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _loading ? null : _connect,
               child: _loading
                   ? const CircularProgressIndicator(color: Colors.grey)
                   : const Text('连接摄像头'),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 12),
             if (_error != null)
               Text(_error!, style: const TextStyle(color: Colors.red)),
             if (_manufacturer != null) ...[

@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 声明应用程序需要访问网络的权限 -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 声明应用程序需要写入外部存储的权限，用于保存截图和录屏 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 声明应用程序需要读取外部存储的权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!-- 对于Android 10 (API 29) 及以上，如果需要访问所有文件，可能需要此权限，但通常image_gallery_saver会处理好 -->
+    <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> -->
     <application
         android:label="zeye"
         android:name="${applicationName}"

@@ -4,6 +4,7 @@ import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playl
 import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
 import 'package:zeye/controllers/camera_controller.dart'; // 导入摄像头控制器
 import 'package:zeye/models/camera_model.dart'; // 导入摄像头模型
+import 'package:zeye/utils/media_tools.dart'; // 导入媒体工具类
 
 /// RTSP播放页面
 class RtspPage extends StatefulWidget {
@@ -22,6 +23,9 @@ class _RtspPageState extends State<RtspPage> {
   late final controller = VideoController(player);
   // 获取摄像头控制器实例
   late final CameraController cameraController; // 延迟初始化
+
+  // 用于截图的GlobalKey
+  final GlobalKey _videoKey = GlobalKey();
 
   @override
   void initState() {
@@ -64,13 +68,48 @@ class _RtspPageState extends State<RtspPage> {
         title: Text('${widget.camera.name}（如果加载时间过长请返回重新进入）'),
       ), // 显示摄像头名称作为标题
 
-      body: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.width * 9.0 / 16.0,
-          // 使用[Video]小部件显示视频输出。
-          child: Video(controller: controller),
-        ),
+      body: Column(
+        children: [
+          // 视频播放区域
+          RepaintBoundary(
+            key: _videoKey, // 为视频区域添加GlobalKey以便截图
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.width * 9.0 / 16.0,
+              // 使用[Video]小部件显示视频输出。
+              child: Video(controller: controller),
+            ),
+          ),
+          // 工具栏
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // 截图按钮
+                ElevatedButton.icon(
+                  onPressed: () {
+                    MediaTools.captureAndSaveScreenshot(_videoKey, context);
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('截图'),
+                ),
+                // 录屏按钮（待实现）
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: 调用录屏功能
+                    MediaTools.startScreenRecording(); // 示例调用
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('录屏功能待实现')));
+                  },
+                  icon: const Icon(Icons.videocam),
+                  label: const Text('录屏'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
