@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -90,12 +90,12 @@ class MediaTools {
 
       if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
         // 移动平台保存到相册
-        final result = await ImageGallerySaver.saveImage(pngBytes);
-        if (result['isSuccess']) {
-          savePath = result['filePath'];
-          message = '截图已保存到相册: $savePath';
+        final bool success = await ImageGallerySaverPlus.saveImage(pngBytes);
+        if (success) {
+          // image_gallery_saver_plus 不直接返回 filePath，只返回是否成功
+          message = '截图已保存到相册';
         } else {
-          message = '截图保存失败: ${result['errorMessage']}';
+          message = '截图保存失败';
         }
       } else if (UniversalPlatform.isWindows ||
           UniversalPlatform.isMacOS ||
