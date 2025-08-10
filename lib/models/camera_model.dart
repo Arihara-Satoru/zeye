@@ -23,11 +23,6 @@ class Camera {
   @HiveField(6)
   @HiveField(6)
   bool isOnline; // 设备在线状态，true为在线，false为离线
-  @HiveField(7)
-  String? snapshotUrl; // 快照URL
-  @HiveField(8) // 新增快照端口字段
-  final String snapshotPort; // 快照端口，通常为80
-
   /// 构造函数
   Camera({
     required this.name,
@@ -37,9 +32,7 @@ class Camera {
     required this.ipAddress,
     required this.port,
     this.isOnline = false, // 默认离线
-    this.snapshotUrl, // 快照URL，可为空
-    String? snapshotPort, // 将参数改为可空
-  }) : snapshotPort = snapshotPort ?? '80'; // 如果传入null，则使用默认值'80'
+  });
 
   /// 复制构造函数，用于创建新的Camera对象并修改部分属性
   Camera copyWith({
@@ -50,8 +43,6 @@ class Camera {
     String? ipAddress,
     String? port,
     bool? isOnline,
-    String? snapshotUrl,
-    String? snapshotPort, // 复制构造函数中也添加
   }) {
     return Camera(
       name: name ?? this.name,
@@ -61,8 +52,6 @@ class Camera {
       ipAddress: ipAddress ?? this.ipAddress,
       port: port ?? this.port,
       isOnline: isOnline ?? this.isOnline,
-      snapshotUrl: snapshotUrl ?? this.snapshotUrl,
-      snapshotPort: snapshotPort ?? this.snapshotPort, // 复制构造函数中也添加
     );
   }
 }

@@ -97,8 +97,6 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final CameraController cameraController = Get.find(); // 获取摄像头控制器
-
     return Dialog(
       backgroundColor: Theme.of(context).colorScheme.surface, // 从主题里取背景颜色
       child: Padding(
@@ -151,32 +149,6 @@ class _OnvifHomePageState extends State<OnvifHomePage> {
                 SelectableText(_streamUri!),
               ],
               const SizedBox(height: 12),
-              // 显示快照
-              Obx(() {
-                final camera = cameraController.findCameraByUrl(_streamUri!);
-                if (camera != null &&
-                    camera.isOnline &&
-                    camera.snapshotUrl != null) {
-                  return Column(
-                    children: [
-                      const Text('快照:'),
-                      const SizedBox(height: 8),
-                      Image.network(
-                        camera.snapshotUrl!,
-                        width: 200,
-                        height: 150,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Text('无法加载快照');
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  );
-                } else {
-                  return const SizedBox.shrink(); // 不显示快照
-                }
-              }),
             ],
           ],
         ),

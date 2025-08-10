@@ -49,11 +49,11 @@ class HomeScreen extends StatelessWidget {
             ? const Center(child: Text('点击右下角按钮添加摄像头'))
             : GridView.builder(
                 padding: const EdgeInsets.all(8.0),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 每行显示2个卡片
-                  crossAxisSpacing: 8.0, // 水平间距
-                  mainAxisSpacing: 8.0, // 垂直间距
-                  childAspectRatio: 1.5, // 卡片宽高比
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 300, // 每个卡片最大宽度（可根据需要调整）
+                  mainAxisSpacing: 8.0,
+                  crossAxisSpacing: 8.0,
+                  childAspectRatio: 1.5, // 控制卡片的宽高比
                 ),
                 itemCount: cameraController.cameras.length,
                 itemBuilder: (context, index) {
@@ -62,6 +62,7 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.dialog(OnvifHomePage()); // 使用Get.dialog显示对话框
@@ -164,33 +165,15 @@ class CameraCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4.0),
-                    // 显示快照
-                    if (camera.isOnline && camera.snapshotUrl != null)
-                      Expanded(
-                        child: Center(
-                          child: Image.network(
-                            camera.snapshotUrl!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.broken_image, size: 50);
-                            },
-                          ),
-                        ),
-                      )
-                    else
-                      Expanded(
-                        child: Center(
-                          child: Icon(
-                            camera.isOnline
-                                ? Icons.videocam
-                                : Icons.videocam_off,
-                            size: 50,
-                            color: camera.isOnline ? Colors.green : Colors.red,
-                          ),
+                    Expanded(
+                      child: Center(
+                        child: Icon(
+                          camera.isOnline ? Icons.videocam : Icons.videocam_off,
+                          size: 50,
+                          color: camera.isOnline ? Colors.green : Colors.red,
                         ),
                       ),
+                    ),
                     const SizedBox(height: 4.0),
                     Align(
                       alignment: Alignment.bottomRight,
