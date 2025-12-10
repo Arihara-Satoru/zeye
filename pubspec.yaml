@@ -1,7 +1,7 @@
 name: zeye
-description: "A new Flutter project."
-publish_to: "none"
-version: 0.1.0
+description: "Zeye 是一个基于 Flutter 开发的应用程序，旨在提供一个简单易用的界面，用于连接 ONVIF 兼容的 IP 摄像头，获取设备信息，并播放其 RTSP 视频流。."
+publish_to: "satira"
+version: 0.2.0
 
 environment:
   sdk: ^3.8.1
@@ -9,10 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  easy_onvif: ^3.1.1+5
-  media_kit: ^1.1.12 # Primary package.
-  media_kit_video: ^1.2.6 # For video rendering.
-  media_kit_libs_video: ^1.0.5 # Native video dependencies.
+  easy_onvif: ^3.1.3
+  media_kit: ^1.2.0
+  media_kit_video: ^1.3.0 # For video rendering.
+  media_kit_libs_video: ^1.0.6 # Native video dependencies.
   get: ^4.6.6
   hive: ^2.2.3 # 用于数据持久化
   hive_flutter: ^1.1.0 # 用于Flutter集成
